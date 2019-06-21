@@ -1,34 +1,33 @@
-const express = require('express');
-const path = require('path');
-const utils = require('./lib/hashUtils');
-const partials = require('express-partials');
-const bodyParser = require('body-parser');
-const Auth = require('./middleware/auth');
-const models = require('./models');
+const express = require("express");
+const path = require("path");
+const utils = require("./lib/hashUtils");
+const partials = require("express-partials");
+const bodyParser = require("body-parser");
+const Auth = require("./middleware/auth");
+const models = require("./models");
+const createSession = require("./middleware/auth");
+const cookieParse = require("./middleware/cookieParser");
 
 const app = express();
 
-app.set('views', `${__dirname}/views`);
-app.set('view engine', 'ejs');
+app.set("views", `${__dirname}/views`);
+app.set("view engine", "ejs");
 app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, "../public")));
 
-
-
-app.get('/', 
-(req, res) => {
-  res.render('index');
+app.get("/", (req, res) => {
+  // check if it has a cookie
+  console.log(req.headers.cookie);
+  res.render("index");
 });
 
-app.get('/create', 
-(req, res) => {
-  res.render('index');
+app.get("/create", (req, res) => {
+  res.render("index");
 });
 
-app.get('/links', 
-(req, res, next) => {
+app.get("/links", (req, res, next) => {
   models.Links.getAll()
     .then(links => {
       res.status(200).send(links);
@@ -38,8 +37,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
-(req, res, next) => {
+app.post("/links", (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
@@ -77,8 +75,53 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
+app.get("/signup", (req, res) => {
+  res.render("signup");
+});
 
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  return models.Users.get({ username })
+    .then(user => {
+      return models.Users.compare(password, user.password, user.salt);
+    })
+    .then(success => {
+      if (success) {
+        res.status(200);
+        res.cookie("session", "test");
+        res.redirect("/");
+      } else {
+        res.status(400);
+        res.redirect("/login");
+      }
+    })
+    .catch(err => {
+      res.status(404);
+      res.redirect("/login");
+    });
+
+  // models.Sessions.create();
+});
+
+app.post("/signup", (req, res) => {
+  // parse the request
+  var { username, password } = req.body;
+  return models.Users.create({ username, password })
+    .then(() => {
+      res.status(201);
+      res.redirect("/");
+    })
+    .catch(err => {
+      res.status(400);
+      console.error("error signing up");
+      res.redirect("/signup");
+    });
+  // models.Sessions.create();
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
@@ -86,13 +129,11 @@ app.post('/links',
 // If the short-code doesn't exist, send the user to '/'
 /************************************************************/
 
-app.get('/:code', (req, res, next) => {
-
+app.get("/:code", (req, res, next) => {
   return models.Links.get({ code: req.params.code })
     .tap(link => {
-
       if (!link) {
-        throw new Error('Link does not exist');
+        throw new Error("Link does not exist");
       }
       return models.Clicks.create({ linkId: link.id });
     })
@@ -106,7 +147,7 @@ app.get('/:code', (req, res, next) => {
       res.status(500).send(error);
     })
     .catch(() => {
-      res.redirect('/');
+      res.redirect("/");
     });
 });
 

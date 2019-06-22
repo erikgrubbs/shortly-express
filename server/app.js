@@ -75,6 +75,14 @@ app.post("/links", (req, res, next) => {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get("/logout", (req, res) => {
+  return models.Sessions.delete({ id: req.session.id }).then(() => {
+    res.clearCookie("shortlyid", { value: req.session.hash });
+    res.status(200);
+    res.redirect("/login");
+  });
+});
+
 app.get("/login", (req, res) => {
   res.render("login");
 });
@@ -87,11 +95,8 @@ app.post("/login", (req, res) => {
   const { username, password } = req.body;
   return models.Users.get({ username })
     .then(user => {
-      return models.Users.compare(password, user.password, user.salt);
-    })
-    .then(success => {
-      if (success) {
-
+      if (models.Users.compare(password, user.password, user.salt)) {
+        models.Sessions.update({ id: req.session.id }, { userId: user.id });
         res.status(200);
         res.redirect("/");
       } else {
@@ -111,8 +116,12 @@ app.post("/signup", (req, res) => {
   // parse the request
   var { username, password } = req.body;
   return models.Users.create({ username, password })
-    .then(() => {
+    .then(result => {
       res.status(201);
+      models.Sessions.update(
+        { id: req.session.id },
+        { userId: result.insertId }
+      );
       res.redirect("/");
     })
     .catch(err => {

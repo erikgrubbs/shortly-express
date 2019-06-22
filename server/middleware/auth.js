@@ -6,6 +6,9 @@ module.exports.createSession = (req, res, next) => {
   if (cookieCheck) {
     return models.Sessions.get({ hash: req.cookies.shortlyid })
       .then(session => {
+        if (session === undefined) {
+          throw "bad cookie";
+        }
         req.session = session;
       })
       .then(() => {

@@ -9,7 +9,7 @@ var port = 4568;
 
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
-// Mimic the behavior of xit and xdescribe with xbeforeEach.
+// Mimic the behavior of it and xdescribe with xbeforeEach.
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
@@ -72,7 +72,7 @@ describe('', function() {
       });
     });
 
-    xit('contains id, username, password columns', function(done) {
+    it('contains id, username, password columns', function(done) {
       var newUser = {
         username: 'Howard',
         password: 'p@ssw0rd'
@@ -88,7 +88,7 @@ describe('', function() {
       });
     });
 
-    xit('only allows unique usernames', function(done) {
+    it('only allows unique usernames', function(done) {
       var newUser = {
         username: 'Howard',
         password: 'p@ssw0rd'
@@ -103,7 +103,7 @@ describe('', function() {
       });
     });
 
-    xit('should increment the id of new rows', function(done) {
+    it('should increment the id of new rows', function(done) {
       var newUser = {
         username: 'Howard',
         password: 'p@ssw0rd'
@@ -125,7 +125,7 @@ describe('', function() {
 
   describe('Account Creation:', function() {
 
-    xit('signup creates a new user record', function(done) {
+    it('signup creates a new user record', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/signup',
@@ -147,7 +147,7 @@ describe('', function() {
       });
     });
 
-    xit('does not store the user\'s original text password', function(done) {
+    it('does not store the user\'s original text password', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/signup',
@@ -170,7 +170,7 @@ describe('', function() {
       });
     });
 
-    xit('redirects to signup if the user already exists', function(done) {
+    it('redirects to signup if the user already exists', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/signup',
@@ -190,7 +190,7 @@ describe('', function() {
       });
     });
 
-    xit('redirects to index after user is created', function(done) {
+    it('redirects to index after user is created', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/signup',
@@ -225,7 +225,7 @@ describe('', function() {
       });
     });
 
-    xit('Logs in existing users', function(done) {
+    it('Logs in existing users', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/login',
@@ -242,7 +242,7 @@ describe('', function() {
       });
     });
 
-    xit('Users that do not exist are kept on login page', function(done) {
+    it('Users that do not exist are kept on login page', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/login',
@@ -259,7 +259,7 @@ describe('', function() {
       });
     });
 
-    xit('Users that enter an incorrect password are kept on login page', function(done) {
+    it('Users that enter an incorrect password are kept on login page', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/login',
@@ -278,7 +278,7 @@ describe('', function() {
   });
 
   describe('Sessions Schema:', function() {
-    xit('contains a sessions table', function(done) {
+    it('contains a sessions table', function(done) {
       var queryString = 'SELECT * FROM sessions';
       db.query(queryString, function(err, results) {
         if (err) { return done(err); }
@@ -287,7 +287,7 @@ describe('', function() {
       });
     });
 
-    xit('contains id, hash, userId columns', function(done) {
+    it('contains id, hash, userId columns', function(done) {
       var newSession = {
         hash: 'e98f26e5c90a09e391eee2211b57a61b5dc836d5'
       };
@@ -304,7 +304,7 @@ describe('', function() {
       });
     });
 
-    xit('should increment the id of new rows', function(done) {
+    it('should increment the id of new rows', function(done) {
       var newSession = {
         hash: 'e98f26e5c90a09e391eee2211b57a61b5dc836d5'
       };
@@ -331,7 +331,7 @@ describe('', function() {
 
     describe('Cookie Parser', function() {
 
-      xit('parses cookies and assigns an object of key-value pairs to a session property on the request', function(done) {
+      it('parses cookies and assigns an object of key-value pairs to a session property on the request', function(done) {
         var requestWithoutCookies = httpMocks.createRequest();
         var requestWithCookies = httpMocks.createRequest({
           headers: {
@@ -372,7 +372,7 @@ describe('', function() {
     });
 
     describe('Session Parser', function() {
-      xit('initializes a new session when there are no cookies on the request', function(done) {
+      it('initializes a new session when there are no cookies on the request', function(done) {
         var requestWithoutCookies = httpMocks.createRequest();
         var response = httpMocks.createResponse();
 
@@ -385,7 +385,7 @@ describe('', function() {
         });
       });
 
-      xit('sets a new cookie on the response when a session is initialized', function(done) {
+      it('sets a new cookie on the response when a session is initialized', function(done) {
         var requestWithoutCookie = httpMocks.createRequest();
         var response = httpMocks.createResponse();
 
@@ -397,7 +397,7 @@ describe('', function() {
         });
       });
 
-      xit('assigns a session object to the request if a session already exists', function(done) {
+      it('assigns a session object to the request if a session already exists', function(done) {
 
         var requestWithoutCookie = httpMocks.createRequest();
         var response = httpMocks.createResponse();
@@ -418,7 +418,7 @@ describe('', function() {
         });
       });
 
-      xit('creates a new hash for each new session', function(done) {
+      it('creates a new hash for each new session', function(done) {
         var requestWithoutCookies = httpMocks.createRequest();
         var response = httpMocks.createResponse();
 
@@ -435,7 +435,7 @@ describe('', function() {
         });
       });
 
-      xit('assigns a username and userId property to the session object if the session is assigned to a user', function(done) {
+      it('assigns a username and userId property to the session object if the session is assigned to a user', function(done) {
         var requestWithoutCookie = httpMocks.createRequest();
         var response = httpMocks.createResponse();
         var username = 'BillZito';
@@ -464,7 +464,7 @@ describe('', function() {
         });
       });
 
-      xit('clears and reassigns a new cookie if there is no session assigned to the cookie', function(done) {
+      it('clears and reassigns a new cookie if there is no session assigned to the cookie', function(done) {
         var maliciousCookieHash = '8a864482005bcc8b968f2b18f8f7ea490e577b20';
         var response = httpMocks.createResponse();
         var requestWithMaliciousCookie = httpMocks.createRequest();

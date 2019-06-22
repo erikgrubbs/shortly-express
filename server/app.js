@@ -16,10 +16,10 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
-
+app.use(cookieParse);
+app.use(Auth.createSession);
 app.get("/", (req, res) => {
   // check if it has a cookie
-  console.log(req.headers.cookie);
   res.render("index");
 });
 
@@ -91,8 +91,8 @@ app.post("/login", (req, res) => {
     })
     .then(success => {
       if (success) {
+
         res.status(200);
-        res.cookie("session", "test");
         res.redirect("/");
       } else {
         res.status(400);
